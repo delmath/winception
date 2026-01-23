@@ -1,0 +1,144 @@
+version: "3.7"
+
+services:
+    redis:
+        build:
+            context: ./requirements/redis
+            dockerfile: Dockerfile
+        container_name: redis
+        restart: always
+        networks:
+            - inception_network
+        expose:
+            - "6379"
+
+    mariadb:
+        env_file: .env
+        build:
+            context: ./requirements/mariadb
+            dockerfile: Dockerfile
+        container_name: mariadb
+        restart: always
+        networks:
+            - inception_network
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ADMIN_USER=${MYSQL_ADMIN_USER}
+            - MYSQL_ADMIN_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+        volumes:
+            - mariadb_volume:/var/lib/mysql
+
+    wordpress:
+        env_file: .env
+        build:
+            context: ./requirements/wordpress
+            dockerfile: Dockerfile
+        container_name: wordpress
+        restart: always
+        networks:
+            - inception_network
+        expose:
+            - "9000"
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ADMIN_USER=${MYSQL_ADMIN_USER}
+            - MYSQL_ADMIN_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+            - DOMAIN_NAME=${DOMAIN_NAME}
+        volumes:
+            - wordpress_volume:/var/www/html
+        depends_on:
+            - mariadb
+            - redis
+
+    nginx:
+        env_file: .env
+        build:
+            context: ./requirements/nginx
+            dockerfile: Dockerfile
+            args:
+                - DOMAIN_NAME=${DOMAIN_NAME}
+        container_name: nginx
+        restart: always
+        networks:
+            - inception_network
+        ports:
+            - "443:443"
+            - "8002:8001"
+            - "8000:8000"
+        volumes:
+            - wordpress_volume:/var/www/html
+            - adminer_volume:/var/www/adminer
+        depends_on:
+            - wordpress
+            - adminer
+            - static-site
+
+    adminer:
+        build:
+            context: ./requirements/adminer
+            dockerfile: Dockerfile
+        container_name: adminer
+        restart: always
+        networks:
+            - inception_network
+        expose:
+            - "9001"
+        volumes:
+            - adminer_volume:/var/www/html
+        depends_on:
+            - mariadb
+
+    ftp:
+        build:
+            context: ./requirements/ftp
+            dockerfile: Dockerfile
+        container_name: ftp
+        restart: always
+        networks:
+            - inception_network
+        ports:
+            - "21:21"
+            - "21000-21010:21000-21010"
+        environment:
+            - FTP_USER=ftpuser
+            - FTP_PASSWORD=${FTP_PASSWORD:-ftppass}
+        volumes:
+            - wordpress_volume:/var/www/html
+        depends_on:
+            - wordpress
+
+    static-site:
+        build:
+            context: ./requirements/static-site
+            dockerfile: Dockerfile
+        container_name: static-site
+        restart: always
+        networks:
+            - inception_network
+        expose:
+            - "8000"
+
+volumes:
+    mariadb_volume:
+        driver_opts:
+            type: "none"
+            device: "/home/${USER}/data/mariadb"
+            o: "bind"
+
+    wordpress_volume:
+        driver_opts:
+            type: "none"
+            device: "/home/${USER}/data/wordpress"
+            o: "bind"
+
+    adminer_volume:
+        driver: local
+
+networks:
+    inception_network:
+        name: inception_network
