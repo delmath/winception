@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 ARG DOMAIN_NAME
 ENV DOMAIN_NAME=${DOMAIN_NAME}

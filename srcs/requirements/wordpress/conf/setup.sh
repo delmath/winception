@@ -91,4 +91,4 @@ define('WP_CACHE', true);\n\
 	echo "WordPress configured and ready to use."
 fi
 
-exec /usr/sbin/php-fpm7.4 -F
+exec /usr/sbin/php-fpm8.2 -F

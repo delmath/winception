@@ -1,14 +1,12 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && apt-get install -y \
     git \
     nginx \
     python3 \
-    python3-pip \
+    python3-markdown \
+    python3-pygments \
     && rm -rf /var/lib/apt/lists/*
-
-# Installer markdown pour convertir les fichiers
-RUN pip3 install markdown pygments
 
 WORKDIR /app
 
