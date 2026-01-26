@@ -1,4 +1,4 @@
-SRCS_DIR = srcs https://prod.liveshare.vsengsaas.visualstudio.com/join?E2BC819F5022421C361B930261967579F73D
+SRCS_DIR = srcs
 COMPOSE_FILE = $(SRCS_DIR)/docker-compose.yml
 DATA_DIR = /home/madelvin/data
 MARIADB_DIR = $(DATA_DIR)/mariadb
