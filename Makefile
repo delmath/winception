@@ -5,8 +5,6 @@ MARIADB_DIR = $(DATA_DIR)/mariadb
 WORDPRESS_DIR = $(DATA_DIR)/wordpress
 DOCKER_COMPOSE = docker-compose -f $(COMPOSE_FILE)
 
-.DEFAULT_GOAL := help
-
 all: build up
 
 $(DATA_DIR):
@@ -46,45 +44,4 @@ fclean: down
 
 re: fclean all
 
-help:
-	@echo "╔══════════════════════════════════════════════════════════╗"
-	@echo "║      INCEPTION - WordPress with Docker + Bonus          ║"
-	@echo "╚══════════════════════════════════════════════════════════╝"
-	@echo ""
-	@echo "📦 Main commands:"
-	@echo ""
-	@echo "  make all         - Build and start containers"
-	@echo "  make build       - Build Docker images"
-	@echo "  make up          - Start containers"
-	@echo "  make stop        - Stop containers"
-	@echo "  make down        - Stop and remove containers"
-	@echo ""
-	@echo "🧹 Cleanup:"
-	@echo ""
-	@echo "  make clean       - ⚠️  DELETES your WordPress data!"
-	@echo "  make fclean      - ⚠️  Full cleanup (data + images)"
-	@echo "  make re          - ⚠️  Full rebuild (fclean + all)"
-	@echo ""
-	@echo "💾 Persistent data:"
-	@echo ""
-	@echo "  Your WordPress changes are saved in:"
-	@echo "  → /home/madelvin/data/wordpress/"
-	@echo "  → /home/madelvin/data/mariadb/"
-	@echo ""
-	@echo "🎁 Bonus services:"
-	@echo ""
-	@echo "  Redis Cache    - WordPress caching"
-	@echo "  FTP Server     - Port 21 (ftpuser/ftppass)"
-	@echo "  Adminer        - http://localhost:8080"
-	@echo "  Static Site    - http://localhost:8000"
-	@echo ""
-	@echo "  ✅ 'make stop/up/down' → Data PRESERVED"
-	@echo "  ❌ 'make clean/fclean' → Data DELETED"
-	@echo ""
-	@echo "📖 Documentation:"
-	@echo ""
-	@echo "  cat PERSISTENT_DATA.md  - Persistent data guide"
-	@echo ""
-	@echo "════════════════════════════════════════════════════════════"
-
-.PHONY: all build up stop down clean fclean re help
+.PHONY: build up stop down clean fclean re all

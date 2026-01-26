@@ -16,13 +16,13 @@ services:
         condition: service_healthy
       adminer:
         condition: service_started
-      static_page:
+      static-site:
         condition: service_started
     ports:
       - "443:443"
     volumes:
-      - wordpress_data:/var/www/html
-      - adminer_data:/var/www/adminer
+      - wordpress_volume:/var/www/html
+      - adminer_volume:/var/www/adminer
     networks:
       - inception_network
     env_file:
@@ -41,12 +41,24 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ADMIN_USER: ${MYSQL_ADMIN_USER}
+      MYSQL_ADMIN_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mariadb_volume:/var/lib/mysql
     networks:
       - inception_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -61,21 +73,25 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ADMIN_USER: ${MYSQL_ADMIN_USER}
+      MYSQL_ADMIN_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
       DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_volume:/var/www/html
     networks:
       - inception_network
     expose:
       - "9000"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9000 || exit 1"]
+      test: ["CMD-SHELL", "pidof php-fpm7.4 || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -111,7 +127,7 @@ services:
       FTP_USER: ftpuser
       FTP_PASSWORD: ${FTP_PASSWORD:-ftppass}
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_volume:/var/www/html
     depends_on:
       wordpress:
         condition: service_healthy
@@ -127,14 +143,14 @@ services:
     expose:
       - "9001"
     volumes:
-      - adminer_data:/var/www/html
+      - adminer_volume:/var/www/html
     depends_on:
       mariadb:
         condition: service_healthy
     networks:
       - inception_network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9001 || exit 1"]
+      test: ["CMD-SHELL", "pidof php-fpm7.4 || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -152,155 +168,21 @@ services:
       - inception_network
 
 volumes:
-  mariadb_data:
+  mariadb_volume:
     driver: local
     driver_opts:
       type: "none"
-      device: "/home/${USER}/data/mariadb"
+      device: "/home/madelvin/data/mariadb"
       o: "bind"
-  wordpress_data:
+  wordpress_volume:
     driver: local
     driver_opts:
       type: "none"
-      device: "/home/${USER}/data/wordpress"
+      device: "/home/madelvin/data/wordpress"
       o: "bind"
-  adminer_data:
+  adminer_volume:
     driver: local
 
 networks:
   inception_network:
     driver: bridge
-version: "3.7"
-
-services:
-    nginx:
-        env_file: .env
-        build:
-            context: ./requirements/nginx
-            dockerfile: Dockerfile
-            args:
-                - DOMAIN_NAME=${DOMAIN_NAME}
-        container_name: nginx
-        restart: always
-        networks:
-            - inception_network
-        ports:
-            - "443:443"
-        volumes:
-            - wordpress_volume:/var/www/html
-            - adminer_volume:/var/www/adminer
-        depends_on:
-            - wordpress
-            - adminer
-            - static-site
-    mariadb:
-        env_file: .env
-        build:
-            context: ./requirements/mariadb
-            dockerfile: Dockerfile
-        container_name: mariadb
-        restart: always
-        networks:
-            - inception_network
-        environment:
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-            - MYSQL_DATABASE=${MYSQL_DATABASE}
-            - MYSQL_USER=${MYSQL_USER}
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-            - MYSQL_ADMIN_USER=${MYSQL_ADMIN_USER}
-            - MYSQL_ADMIN_PASSWORD=${MYSQL_ADMIN_PASSWORD}
-        volumes:
-            - mariadb_volume:/var/lib/mysql
-    wordpress:
-        env_file: .env
-        build:
-            context: ./requirements/wordpress
-            dockerfile: Dockerfile
-        container_name: wordpress
-        restart: always
-        networks:
-            - inception_network
-        expose:
-            - "9000"
-        environment:
-            - MYSQL_DATABASE=${MYSQL_DATABASE}
-            - MYSQL_USER=${MYSQL_USER}
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-            - MYSQL_ADMIN_USER=${MYSQL_ADMIN_USER}
-            - MYSQL_ADMIN_PASSWORD=${MYSQL_ADMIN_PASSWORD}
-            - DOMAIN_NAME=${DOMAIN_NAME}
-        volumes:
-            - wordpress_volume:/var/www/html
-        depends_on:
-            - mariadb
-            - redis
-    redis:
-        build:
-            context: ./requirements/redis
-            dockerfile: Dockerfile
-        container_name: redis
-        restart: always
-        networks:
-            - inception_network
-        expose:
-            - "6379"
-    ftp:
-        build:
-            context: ./requirements/ftp
-            dockerfile: Dockerfile
-        container_name: ftp
-        restart: always
-        networks:
-            - inception_network
-        ports:
-            - "21:21"
-            - "21000-21010:21000-21010"
-        environment:
-            - FTP_USER=ftpuser
-            - FTP_PASSWORD=${FTP_PASSWORD:-ftppass}
-        volumes:
-            - wordpress_volume:/var/www/html
-        depends_on:
-            - wordpress
-    adminer:
-        build:
-            context: ./requirements/adminer
-            dockerfile: Dockerfile
-        container_name: adminer
-        restart: always
-        networks:
-            - inception_network
-        expose:
-            - "9001"
-        volumes:
-            - adminer_volume:/var/www/html
-        depends_on:
-            - mariadb
-    static-site:
-        build:
-            context: ./requirements/static-site
-            dockerfile: Dockerfile
-        container_name: static-site
-        restart: always
-        networks:
-            - inception_network
-        expose:
-            - "8000"
-
-volumes:
-    mariadb_volume:
-        driver_opts:
-            type: "none"
-            device: "/home/${USER}/data/mariadb"
-            o: "bind"
-    wordpress_volume:
-        driver_opts:
-            type: "none"
-            device: "/home/${USER}/data/wordpress"
-            o: "bind"
-    adminer_volume:
-        driver: local
-
-networks:
-    inception_network:
-        name: inception_network

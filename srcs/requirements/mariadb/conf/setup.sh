@@ -62,15 +62,6 @@ EOSQL
 
 echo "MariaDB configured successfully."
 
-if [ -f /usr/local/share/wordpress_template.sql ]; then
-	echo "Importing WordPress template (your configured site)..."
-	mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" < /usr/local/share/wordpress_template.sql
-	echo "WordPress template successfully imported!"
-	echo "Your site is ready with all your pages and settings!"
-else
-	echo "No template found, empty database created."
-fi
-
 echo "Temporary server shutdown..."
 if ! mysqladmin -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown; then
 	echo "Error stopping MariaDB, attempted to kill..."
