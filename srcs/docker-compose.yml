@@ -18,6 +18,8 @@ services:
         condition: service_started
       static-site:
         condition: service_started
+      portainer:
+        condition: service_started
     ports:
       - "443:443"
     volumes:
@@ -167,6 +169,26 @@ services:
     networks:
       - inception_network
 
+  portainer:
+    container_name: portainer
+    build:
+      context: ./requirements/portainer
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      PORTAINER_ADMIN_USER: ${PORTAINER_ADMIN_USER}
+      PORTAINER_ADMIN_PASSWORD: ${PORTAINER_ADMIN_PASSWORD}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    expose:
+      - "9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_volume:/data
+    networks:
+      - inception_network
+
 volumes:
   mariadb_volume:
     driver: local
@@ -181,6 +203,8 @@ volumes:
       device: "/home/madelvin/data/wordpress"
       o: "bind"
   adminer_volume:
+    driver: local
+  portainer_volume:
     driver: local
 
 networks:
