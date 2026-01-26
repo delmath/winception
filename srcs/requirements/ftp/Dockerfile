@@ -1,8 +1,6 @@
 FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y \
-	vsftpd \
-	&& rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y vsftpd && rm -rf /var/lib/apt/lists/*
 
 COPY conf/vsftpd.conf /etc/vsftpd.conf
 COPY conf/setup.sh /setup.sh

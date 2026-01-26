@@ -1,5 +1,4 @@
 #!/bin/bash
-
 mkdir -p /run/php
 chown -R www-data:www-data /run/php
 
@@ -87,8 +86,6 @@ define('WP_CACHE', true);\n\
 
 	echo "Cleaning up WP-CLI..."
 	rm -f /usr/local/bin/wp
-
 	echo "WordPress configured and ready to use."
 fi
-
 exec /usr/sbin/php-fpm8.2 -F
