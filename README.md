@@ -8,8 +8,6 @@ This infrastructure includes:
 * A **WordPress** container running with `php-fpm`.
 * A **MariaDB** container for database management.
 * A **Docker Network** for secure inter-container communication.
-
-### Design Choices
 * **Operating System:** All containers are built from **Debian BookWorm**.
 * **Init Process:** To avoid "hacky" patches like `tail -f`, each service is configured to run in the foreground, respecting the **PID 1** philosophy and allowing proper signal handling.
 * **Security:** No passwords are hardcoded in Dockerfiles. All sensitive data is handled via `.env` files and **Docker Secrets**.
