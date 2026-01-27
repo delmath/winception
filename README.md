@@ -7,7 +7,6 @@ This infrastructure includes:
 * A **NGINX** container serving as the only entry point via port 443 with TLS v1.2/v1.3.
 * A **WordPress** container running with `php-fpm`.
 * A **MariaDB** container for database management.
-* Two **Docker Named Volumes** for persistent data (WordPress files and database).
 * A **Docker Network** for secure inter-container communication.
 
 ### Design Choices
