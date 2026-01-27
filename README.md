@@ -58,7 +58,6 @@ The website will be accessible at `https://[your_login].42.fr`.
 
 * [Docker Documentation](https://docs.docker.com/)
 * [NGINX SSL/TLS Official Guide](https://nginx.org/en/docs/http/configuring_https_servers.html)
-* [Understand PID 1 and Docker](https://www.docker.com/blog/keep-it-small-a-closer-look-at-docker-image-optimization/)
 * [mariaDB Basic Official Guide](https://mariadb.com/docs/server/mariadb-quickstart-guides/basics-guide)
 
 ### AI Usage
