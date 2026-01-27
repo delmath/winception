@@ -10,17 +10,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Cloner le wiki
 RUN git clone https://github.com/Liammmmmmmm/42-miniRT.wiki.git wiki
-
-# Copier le script de conversion
 COPY tools/convert.py /app/convert.py
 RUN chmod +x /app/convert.py
-
-# Convertir les fichiers markdown en HTML
 RUN python3 /app/convert.py
-
-# Configuration nginx simple
 RUN echo 'server {\n\
     listen 8000;\n\
     root /usr/share/nginx/html;\n\
