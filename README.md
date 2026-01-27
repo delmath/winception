@@ -3,7 +3,7 @@
 ## Description
 The **Inception** project is a practical introduction to system administration using **Docker**. The goal is to set up a small infrastructure of different services, all running in their own isolated containers, managed by **Docker Compose**.
 
-This infrastructure includes:
+infrastructure :
 * A **NGINX** container serving as the only entry point via port 443 with TLS v1.2/v1.3.
 * A **WordPress** container running with `php-fpm`.
 * A **MariaDB** container for database management.
