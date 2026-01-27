@@ -20,7 +20,7 @@ stop:
 	$(DOCKER_COMPOSE) stop
 
 down:
-	$(DOCKER_COMPOSE) down -v
+	$(DOCKER_COMPOSE) down
 
 clean: down
 	@if [ -d "$(DATA_DIR)" ]; then \
@@ -33,6 +33,7 @@ fclean: down
 		sudo chown -R $(USER):$(USER) $(DATA_DIR) 2>/dev/null || true; \
 	fi
 	rm -rf $(DATA_DIR)
+	docker volume rm -f srcs_mariadb_volume srcs_wordpress_volume srcs_adminer_volume srcs_portainer_volume 2>/dev/null || true
 	docker rmi -f $$(docker images -q -f "dangling=true") 2>/dev/null || true
 	docker rmi -f $$(docker images -q -f "reference=srcs_nginx") 2>/dev/null || true
 	docker rmi -f $$(docker images -q -f "reference=srcs_wordpress") 2>/dev/null || true
@@ -41,7 +42,14 @@ fclean: down
 	docker rmi -f $$(docker images -q -f "reference=srcs_adminer") 2>/dev/null || true
 	docker rmi -f $$(docker images -q -f "reference=srcs_ftp") 2>/dev/null || true
 	docker rmi -f $$(docker images -q -f "reference=srcs_static-site") 2>/dev/null || true
+	docker rmi -f $$(docker images -q -f "reference=srcs_portainer") 2>/dev/null || true
 
 re: fclean all
 
-.PHONY: build up stop down clean fclean re all
+logs:
+	$(DOCKER_COMPOSE) logs -f
+
+ps:
+	$(DOCKER_COMPOSE) ps
+
+.PHONY: build up stop down clean fclean re all logs ps
