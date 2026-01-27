@@ -1,7 +1,9 @@
 #!/bin/sh
-/opt/portainer/portainer --bind=:9000 --no-analytics &
-PORTAINER_PID=$!
+set -e
+/usr/local/bin/init-portainer.sh
 
-/usr/local/bin/init-portainer.sh &
+echo "Starting Portainer..."
 
-wait $PORTAINER_PID
+exec /opt/portainer/portainer \
+  --bind=:9000 \
+  --no-analytics
