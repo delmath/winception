@@ -10,9 +10,9 @@ WORKDIR /var/www/html
 
 COPY conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 
-COPY conf/setup.sh /usr/local/bin/setup.sh
-RUN chmod +x /usr/local/bin/setup.sh
+COPY conf/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
 
-ENTRYPOINT [ "/usr/local/bin/setup.sh" ]
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]

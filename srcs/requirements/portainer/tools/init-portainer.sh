@@ -7,10 +7,9 @@ if wget -qO- http://localhost:9000/api/users/admin/check 2>/dev/null | grep -q "
     exit 0
 fi
 
-PORTAINER_ADMIN_USER=${PORTAINER_ADMIN_USER:-admin}
-PORTAINER_ADMIN_PASSWORD=${PORTAINER_ADMIN_PASSWORD:-portainer123}
+PORTAINER_ADMIN_USER=${PORTAINER_ADMIN_USER}
+PORTAINER_ADMIN_PASSWORD=${PORTAINER_ADMIN_PASSWORD}
 
-echo "Creating admin user: $PORTAINER_ADMIN_USER"
 curl -s -X POST http://localhost:9000/api/users/admin/init \
     -H "Content-Type: application/json" \
     -d "{

@@ -1,4 +1,4 @@
-# Inception - SyAdmin with Docker
+# Inception - SysAdmin with Docker
 
 ## Description
 The **Inception** project is a practical introduction to system administration using **Docker**. The goal is to set up a small infrastructure of different services, all running in their own isolated containers, managed by **Docker Compose**.
