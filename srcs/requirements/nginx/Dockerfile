@@ -7,30 +7,32 @@ RUN apt-get update && apt-get install -y nginx openssl procps && rm -rf /var/lib
 
 RUN mkdir -p /etc/nginx/ssl
 
-RUN echo "[req]\n\
-default_bits = 2048\n\
-prompt = no\n\
-default_md = sha256\n\
-distinguished_name = dn\n\
-req_extensions = v3_req\n\
-\n\
-[dn]\n\
-C = FR\n\
-ST = ARA\n\
-L = Lyon\n\
-O = 42\n\
-OU = Inception\n\
-CN = ${DOMAIN_NAME}\n\
-\n\
-[v3_req]\n\
-subjectAltName = @alt_names\n\
-\n\
-[alt_names]\n\
-DNS.1 = ${DOMAIN_NAME}\n\
-DNS.2 = www.${DOMAIN_NAME}\n\
-DNS.3 = adminer.${DOMAIN_NAME}\n\
-DNS.4 = static.${DOMAIN_NAME}\n\
-DNS.5 = portainer.${DOMAIN_NAME}" > /tmp/openssl.cnf
+RUN cat > /tmp/openssl.cnf <<EOF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+req_extensions = v3_req
+
+[dn]
+C = FR
+ST = ARA
+L = Lyon
+O = 42
+OU = Inception
+CN = ${DOMAIN_NAME}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = ${DOMAIN_NAME}
+DNS.2 = www.${DOMAIN_NAME}
+DNS.3 = adminer.${DOMAIN_NAME}
+DNS.4 = static.${DOMAIN_NAME}
+DNS.5 = portainer.${DOMAIN_NAME}
+EOF
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout /etc/nginx/ssl/nginx.key \
