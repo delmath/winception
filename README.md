@@ -1,3 +1,6 @@
+This project has been created as part
+of the 42 curriculum by madelvin
+
 # Inception - SysAdmin with Docker
 
 ## Description
