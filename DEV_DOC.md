@@ -1,3 +1,4 @@
+This project has been created as part of the 42 curriculum by madelvin
 # Developer Guide
 
 This guide explains how a developer can set up, run, and manage the project.
