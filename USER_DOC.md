@@ -1,4 +1,5 @@
 This project has been created as part of the 42 curriculum by madelvin
+
 # User Guide
 
 This guide explains how to use the project.
